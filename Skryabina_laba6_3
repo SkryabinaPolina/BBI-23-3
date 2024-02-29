@@ -1,0 +1,78 @@
+class Program
+{
+    class AnswerData
+    {
+        public string answer { get; set; }
+        public double percentage { get; set; }
+
+        public AnswerData(string answer, double percentage = 0)
+        {
+            this.answer = answer;
+            this.percentage = percentage;
+        }
+    }
+
+    struct  Quest
+    {
+        private string[][] questions;
+        private int currIndex;
+
+        public Quest(int max_questions = 100)
+        {
+            questions = new string[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                questions[i] = new string[max_questions];
+            }
+            currIndex = 0;
+
+        }
+
+        public void append(string[] answers)
+        {
+            if (answers.Length != 3)
+            {
+                Console.WriteLine("Должно быть 3 ответа");
+                return;
+            }
+            for (int i = 0; i < answers.Length; i++)
+            {
+                questions[i][currIndex] = answers[i];
+            }
+            currIndex++;
+        }
+
+        AnswerData[] get_top(int i_question)
+        {
+            AnswerData[] data = new AnswerData[questions[i_question].Length];
+            int dataIndex = 0;
+            string[] currQuestions = questions[i_question];
+            var query = currQuestions.OrderBy(x => x);
+
+            string currQuestion = query.First();
+            int currCnt = 0; 
+            int nullCnt = 0;
+            foreach (string item in query)
+            {
+
+                if (item == "")
+                {
+                    nullCnt++;
+                }
+
+                if (item == currQuestion)
+                {
+                    currCnt++;
+                }
+                else
+                {
+                    if (currQuestion != "")
+                    {
+                        data[dataIndex] = new AnswerData(currQuestion, currCnt / (double)(currQuestions.Length - nullCnt) * 100);
+                        dataIndex++;
+                    }
+
+                    currCnt = 1;
+                    currQuestion = item;
+                }
+            }
