@@ -1,0 +1,92 @@
+﻿using System;
+using System.Linq;
+
+abstract class CategoryOfTheYear
+{
+    protected string[] answers;
+
+    public CategoryOfTheYear(string[] answers)
+    {
+        this.answers = answers;
+    }
+
+    public abstract void DetermineTopResponses();
+}
+
+class PersonOfYear : CategoryOfTheYear
+{
+    public PersonOfYear(string[] answers) : base(answers) { }
+
+    public override void DetermineTopResponses()
+    {
+        Random rand = new Random();
+        var groupedAnswers = answers.GroupBy(x => x)
+                                    .Select(group => new { Answer = group.Key, Count = group.Count() })
+                                    .OrderByDescending(x => x.Count)
+                                    .Take(5)
+                                    .ToList();
+
+        Console.WriteLine("Таблица ответов для Человека Года:");
+
+        double sumPercentage = 0;
+        foreach (var item in groupedAnswers)
+        {
+            double percentage = rand.Next(0, 100);
+            while (sumPercentage + percentage > 100)
+            {
+                percentage = rand.Next(0, 100);
+            }
+
+            sumPercentage += percentage;
+
+            Console.WriteLine("{0} - {1:f2}%", item.Answer, percentage);
+        }
+    }
+}
+
+class DiscoveryOfYear : CategoryOfTheYear
+{
+    public DiscoveryOfYear(string[] answers) : base(answers) { }
+
+    public override void DetermineTopResponses()
+    {
+        Random rand = new Random();
+        var groupedAnswers = answers.GroupBy(x => x)
+                                    .Select(group => new { Answer = group.Key, Count = group.Count() })
+                                    .OrderByDescending(x => x.Count)
+                                    .Take(5)
+                                    .ToList();
+
+        Console.WriteLine("Таблица ответов для Открытия Года:");
+
+        double sumPercentage = 0;
+        foreach (var item in groupedAnswers)
+        {
+            double percentage = rand.Next(0, 100);
+            while (sumPercentage + percentage > 100)
+            {
+                percentage = rand.Next(0, 100);
+            }
+
+            sumPercentage += percentage;
+
+            Console.WriteLine("{0} - {1:f2}%", item.Answer, percentage);
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        string[] personOfYearAnswers = { "Person A", "Person B", "Person C", "Person D", "Person E"};
+        string[] discoveryOfYearAnswers = { "Discovery X", "Discovery Y", "Discovery Z", "Discovery Q", "Discovery W"};
+
+        PersonOfYear personOfYear = new PersonOfYear(personOfYearAnswers);
+        DiscoveryOfYear discoveryOfYear = new DiscoveryOfYear(discoveryOfYearAnswers);
+
+        personOfYear.DetermineTopResponses();
+        Console.WriteLine();
+        discoveryOfYear.DetermineTopResponses();
+    }
+}

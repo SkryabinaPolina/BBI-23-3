@@ -1,0 +1,94 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+abstract class WinterSport
+{
+    public string DisciplineName { get; set; }
+
+    public abstract void DisplayDisciplineName();
+}
+
+class FigureSkating : WinterSport
+{
+    public override void DisplayDisciplineName()
+    {
+        Console.WriteLine($"Название дисциплины: Фигурное катание");
+    }
+}
+
+class SpeedSkating : WinterSport
+{
+    public override void DisplayDisciplineName()
+    {
+        Console.WriteLine($"Название дисциплины: Конькобежный спорт");
+    }
+}
+
+class Participant
+{
+    public string LastName { get; set; }
+    public List<int> Places { get; set; }
+
+    public int CalculateTotalPlace()
+    {
+        return Places.Sum();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<Participant> participants = new List<Participant>();
+
+        Console.WriteLine("Введите количество участников:");
+        int count = int.Parse(Console.ReadLine());
+
+        WinterSport sport;
+
+        Console.WriteLine("Выберите вид спорта: 1 - Фигурное катание, 2 - Конькобежный спорт");
+        int choice = int.Parse(Console.ReadLine());
+
+        if (choice == 1)
+        {
+            sport = new FigureSkating();
+        }
+        else
+        {
+            sport = new SpeedSkating();
+        }
+
+        sport.DisplayDisciplineName();
+
+        for (int i = 0; i < count; i++)
+        {
+            Participant participant = new Participant();
+            Console.WriteLine($"Введите фамилию участника {i + 1}:");
+            participant.LastName = Console.ReadLine();
+
+            participant.Places = new List<int>();
+
+            for (int j = 0; j < 7; j++)
+            {
+                Console.WriteLine($"Введите место участника {participant.LastName} у судьи {j + 1}:");
+                participant.Places.Add(int.Parse(Console.ReadLine()));
+            }
+
+            participants.Add(participant);
+        }
+
+        participants.Sort((p1, p2) => p1.CalculateTotalPlace().CompareTo(p2.CalculateTotalPlace()));
+
+        Console.WriteLine("Результаты соревнований:");
+
+        for (int i = 0; i < participants.Count; i++)
+        {
+            int totalPlace = i + 1;
+            participants[i].Places.Sort();
+            participants[i].Places.Reverse();
+
+            Console.WriteLine($"{participants[i].LastName}: {totalPlace} место");
+        }
+    }
+}
