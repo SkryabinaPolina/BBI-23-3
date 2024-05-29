@@ -1,0 +1,305 @@
+﻿using System;
+using System.ComponentModel.Design;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+abstract class Task
+{
+    public Task(string text) { }
+    public abstract void ParTxt(string text);
+}
+
+class Task_1 : Task
+{
+    private Dictionary<char, int> Colwords;
+    public Task_1(string text) : base(text)
+    {
+        Colwords = new Dictionary<char, int>();
+    }
+    public override void ParTxt(string text)
+    {
+        char firstTxt;
+        string[] words = text.Split(new char[] { '.', ',', '!', '?', '"', '-', '(', ')', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string word in words)
+        {
+            if (!string.IsNullOrEmpty(word))
+            {
+                foreach (char letter in word)
+                {
+                    if (char.IsLetter(letter))
+                    {
+                        if (letter == word[0])
+                        {
+                            firstTxt = char.ToLowerInvariant(word[0]);
+                            if (Colwords.ContainsKey(firstTxt))
+                            {
+                                Colwords[firstTxt]++;
+                            }
+                            else
+                            {
+                                Colwords[firstTxt] = 1;
+                            }
+                        }
+                        else
+                        {
+                            if (Colwords.ContainsKey(letter))
+                            {
+                                Colwords[letter]++;
+                            }
+                            else
+                            {
+                                Colwords[letter] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void Print()
+    {
+        Console.WriteLine("Частота появления:");
+        foreach (var ent in Colwords.OrderBy(x => x.Key))
+        {
+            char letter = ent.Key;
+            int count = ent.Value;
+            double procent = ((double)count / Colwords.Values.Sum()) * 100;
+            Console.WriteLine($"Буква '{letter}': {procent:F2}%");
+        }
+    }
+}
+class Task_3 : Task
+{
+    private List<string> splitTxt;
+    public Task_3(string text) : base(text)
+    {
+        splitTxt = new List<string>();
+    }
+    public override void ParTxt(string text)
+    {
+        int firstIndex = 0;
+        int lastIndex = 50;
+        while (firstIndex < text.Length)
+        {
+            int spaceIndex = text.LastIndexOf(' ', lastIndex - 1, lastIndex - firstIndex);
+            if (spaceIndex == -1 || spaceIndex == firstIndex)
+            {
+                splitTxt.Add(text.Substring(firstIndex, lastIndex - firstIndex));
+                firstIndex = lastIndex;
+            }
+            else
+            {
+                splitTxt.Add(text.Substring(firstIndex, spaceIndex - firstIndex));
+                firstIndex = spaceIndex + 1;
+            }
+            lastIndex = Math.Min(firstIndex + 50, text.Length);
+        }
+        Console.WriteLine("Текст после разбиения:");
+        foreach (string line in splitTxt)
+        {
+            Console.WriteLine(line);
+        }
+    }
+}
+class Task_6 : Task
+{
+    public Task_6(string text) : base(text)
+    {
+    }
+    public override void ParTxt(string text)
+    {
+        string[] words = text.Split(new char[] { '.', ',', '!', '?', '"', '-', '(', ')', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        int[] countSlogi = new int[words.Length];
+        int i = 0;
+        foreach (string word in words)
+        {
+            int slogi = 0;
+            if (!string.IsNullOrEmpty(word))
+            {
+                foreach (char letter in word.ToLower())
+                {
+                    if ("аеёиоуыэюяaeiou".Contains(letter))
+                    {
+                        slogi++;
+                    }
+                }
+            countSlogi[i] = slogi;
+            i++;
+        }
+    }
+    Array.Sort(countSlogi); 
+        int count = 0; 
+        for (int j = 1; j<countSlogi.Length; j++) 
+        { 
+            if (countSlogi[j - 1] != countSlogi[j]) 
+            { 
+                Console.WriteLine(countSlogi[j] + " слог(а): " + count); 
+                count = 0; 
+            }
+            else
+{
+    count++;
+} 
+        } 
+    } 
+} 
+ 
+class Task_12 : Task
+{
+    private List<string> words;
+    private List<string> MostChastwords;
+    private Dictionary<string, int> tablic;
+    public Task_12(string text) : base(text)
+    {
+        words = new List<string>();
+        MostChastwords = new List<string>();
+        tablic = new Dictionary<string, int>();
+        MostChastwords = MostChast(text);
+        for (int i = 0; i < MostChastwords.Count; i++)
+        {
+            tablic.Add(MostChastwords[i], i);
+        }
+        string[] splitText = text.Split(' ');
+        foreach (string word in splitText)
+        {
+            words.Add(word);
+        }
+    }
+
+    public List<string> MostChast(string text)
+    {
+        Dictionary<string, int> wordChast = new Dictionary<string, int>();
+        string[] words = text.Split(new char[] { '.', ',', '!', '?', '"', '-', '(', ')', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string word in words)
+        {
+            if (wordChast.ContainsKey(word))
+            {
+                wordChast[word]++;
+            }
+            else
+            {
+                wordChast[word] = 1;
+            }
+        }
+
+        var sortwords = wordChast.OrderByDescending(pair => pair.Value).Take(5).Select(pair => pair.Key).ToList();
+        Console.WriteLine(string.Join(" ", sortwords));
+        return sortwords;
+    }
+    public string Repwords()
+    {
+        for (int i = 0; i < words.Count; i++)
+        {
+            if (tablic.ContainsKey(words[i]))
+            {
+                words[i] = tablic[words[i]].ToString();
+            }
+        }
+        return string.Join(" ", words);
+    }
+    public override void ParTxt(string text) { }
+}
+
+class Task_13 : Task
+{
+    private Dictionary<char, int> wordCounts;
+    public Task_13(string text) : base(text)
+    {
+        wordCounts = new Dictionary<char, int>();
+    }
+    public override void ParTxt(string text)
+    {
+        string[] words = text.Split(new char[] { '.', ',', '!', '?', '"', '-', '(', ')', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string word in words)
+        {
+            if (!string.IsNullOrEmpty(word))
+            {
+                char firstLetter = char.ToLowerInvariant(word[0]);
+                if (char.IsLetter(firstLetter))
+                {
+                    if (wordCounts.ContainsKey(firstLetter))
+                    {
+                        wordCounts[firstLetter]++;
+                    }
+                    else
+                    {
+                        wordCounts[firstLetter] = 1;
+                    }
+                }
+            }
+        }
+    }
+    public void Print()
+    {
+        Console.WriteLine("Процентные доли слов, начинающихся на различные буквы:");
+        foreach (var entry in wordCounts.OrderBy(x => x.Key))
+        {
+            char letter = entry.Key;
+            int count = entry.Value;
+            double proent = ((double)count / wordCounts.Values.Sum()) * 100;
+            Console.WriteLine($"Буква '{letter}': {proent:F2}%");
+        }
+    }
+}
+class Task_15 : Task
+{
+    private List<int> Cifri;
+    public Task_15(string text) : base(text)
+    {
+        Cifri = new List<int>();
+    }
+    public override void ParTxt(string text)
+    {
+        string[] words = text.Split(new char[] { ' ', ',', '.', '!', '?', ')', '(', '"', '-' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string word in words)
+        {
+            string digit = "";
+            if (!string.IsNullOrEmpty(word))
+            {
+                foreach (char letter in word)
+                {
+                    if (char.IsDigit(letter)) { digit += letter; }
+                }
+                if (digit.Length > 0)
+                {
+                    Cifri.Add(int.Parse(digit));
+                }
+            }
+        }
+        Console.WriteLine("Сумма включенных в текст чисел:" + Cifri.Sum(x => x));
+    }
+}
+
+class Program
+{
+    public static void Main()
+    {
+        string inputText = Console.ReadLine();
+        Task_1 task1 = new Task_1(inputText);
+        task1.ParTxt(inputText);
+        task1.Print();
+        Console.WriteLine();
+        inputText = Console.ReadLine();
+        Task_3 task3 = new Task_3(inputText);
+        task3.ParTxt(inputText);
+        Console.WriteLine();
+        inputText = Console.ReadLine();
+        Task_6 task6 = new Task_6(inputText);
+        task6.ParTxt(inputText);
+        Console.WriteLine();
+        Task_12 task12 = new Task_12(inputText);
+        Console.WriteLine("Готовый текст с замененными кодами словами:");
+        Console.WriteLine(task12.Repwords());
+        Console.WriteLine();
+        inputText = Console.ReadLine();
+        Task_13 task13 = new Task_13(inputText);
+        task13.ParTxt(inputText);
+        task13.Print();
+        Console.WriteLine();
+        inputText = Console.ReadLine();
+        Task_15 task15 = new Task_15(inputText);
+        task15.ParTxt(inputText);
+        Console.WriteLine();
+    }
+}
